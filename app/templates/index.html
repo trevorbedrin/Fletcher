@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="/cluster" method="POST">
+      <table>
+        <tr>
+          <td>
+            <strong>
+              Session Type:
+            </strong>
+          </td>
+          <td>
+            <select name="type" width="300px">
+            {% for o in option_list %}
+              <option value="{{ o.name }}">{{ o.name }}</option>
+            {% endfor %}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>
+              Sentiment:
+            </strong>
+          </td>
+          <td>
+            <select name="data-set">
+              <option value="negative">Negative Comments</option>
+              <option value="positive">Positive Comments</option>
+              <option value="polar">All Comments</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>
+              Earliest Date:
+            </strong>
+          </td>
+          <td>
+	    <input id="date" type="text" name="date" readonly="readonly"/>            
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>
+              Epsilon:
+            </strong>
+          </td>
+          <td>
+            <table>
+	      <tr>
+		<td>
+	    	  <input type="number" size="6" name="epsilon" min="0.5" max="1.5" step="0.05" value="0.85">
+                </td>
+              </tr>
+	    </table>
+	  </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>
+              Samples:
+            </strong>
+          </td>
+          <td>
+            <table>
+              <tr>
+		<td>
+                  <input type="number" size="6" name="samples" min="1" max="10" step="1" value="5">
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <input type="submit" value="Submit" />
+          </td>
+        </tr>
+      </table>
+    </form>
+{% endblock %}

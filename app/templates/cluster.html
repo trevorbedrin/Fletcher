@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>{{ type }}</h1> 
+    Comments analyzed: {{ comment_count }}<br />
+    Time to analyze: {{ time }}<br />	
+    Epsilon: {{ epsilon }}<br />
+    Samples: {{ samples }}<br />
+    {% if date %}
+    Comments made after: {{ date }}
+    {% endif %}
+    <h3>Themes:</h3>
+    <div class="panel-group" id="accordion">
+    {% for cluster in clusters %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#{{ cluster.name }}">{{ cluster.centroid }} ({{ cluster.count }} comments)</a>
+                </h4>
+            </div>
+            <div id="{{ cluster.name }}" class="panel-collapse collapse height:0px">
+                <div class="panel-body">
+                    <ul>
+		    {% for item in cluster.list %} 
+		      <li>{{ item }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
