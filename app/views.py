@@ -133,7 +133,7 @@ def cluster():
         data_set = polar_data
    
     # Build Vector of TfIdf Values
-    vectorizer = TfidfVectorizer(ngram_range=(1,2), max_features=10000, stop_words='english')
+    vectorizer = TfidfVectorizer(ngram_range=(1,2), max_features=1000, stop_words='english')
     X_one = vectorizer.fit_transform(data_set).toarray()
     try:
 	pca = PCA(n_components=1000)
@@ -160,7 +160,7 @@ def cluster():
 
         for i in range(0, len(cluster_contents_dbscan)):
             temp_data = np.array(data_set)[clusters_dbscan==i]
-            temp_vectorizer = TfidfVectorizer(ngram_range=(1,2), max_features=10000, stop_words='english')
+            temp_vectorizer = TfidfVectorizer(ngram_range=(1,2), max_features=1000, stop_words='english')
             temp_X = temp_vectorizer.fit_transform(temp_data)
             distance = metrics.pairwise.pairwise_distances(temp_X, Y=get_centroid(temp_X.toarray()).tolist())
             min_distance = np.min(distance)
