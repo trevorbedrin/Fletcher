@@ -19,12 +19,15 @@ with open('survey_comments.csv') as csv_file:
     print csv_reader.next()
 
     for row in csv_reader:
-        row_data = {'code': row[2], 
-         'type': row[3],
-         'date': row[7],
-         'question': row[10],
-         'response': row[11]
-         } 
+        row_data = {
+        	'code': row[2], 
+         	'type': row[3],
+         	'date': row[6],
+         	'question': row[14],
+         	'response': row[15],
+         	'presenter': "%s %s" % (row[8], row[9])
+        } 
+                        
         survey_comments.insert(row_data)
         
 # Build Sentiment Analyzer and categorize comments.  Update Mongo with Sentiment scores
@@ -37,3 +40,5 @@ for response in responses:
     blob = TextBlob(response_text, classifier=analyzer)
     sentiment = blob.sentiment.polarity
     survey_comments.update({"_id": response_id},{"$set":{"sentiment": sentiment}},True)
+    
+    

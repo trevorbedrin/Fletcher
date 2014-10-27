@@ -10,7 +10,22 @@
           </td>
           <td>
             <select name="type" width="300px">
-            {% for o in option_list %}
+            {% for o in session_list %}
+              <option value="{{ o.name }}">{{ o.name }}</option>
+            {% endfor %}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>
+              Presenter:
+            </strong>
+          </td>
+          <td>
+            <select name="presenter" width="300px">
+              <option value='all' />
+	    {% for o in presenter_list %}
               <option value="{{ o.name }}">{{ o.name }}</option>
             {% endfor %}
             </select>

@@ -24,56 +24,31 @@ def get_centroid(data):
 @app.route('/')
 @app.route('/index')
 def index():
-    option_list = [
-                   {'name':'aamc 10 biological science review'},
-                   {'name':'aamc 10 physical science review'},
-                   {'name':'aamc 10 review small group'},
-                   {'name':'aamc 11 biological science review'},
-                   {'name':'aamc 11 physical science review'},
-                   {'name':'aamc 11 review small group'},
-                   {'name':'aamc 7 biological science review'},
-                   {'name':'aamc 7 physical science review'},
-                   {'name':'aamc 8 biological science review'},
-                   {'name':'aamc 8 physical science review'},
-                   {'name':'aamc 9 biological science review'},
-                   {'name':'aamc 9 physical science review'},
-                   {'name':'aamc 9 review small group'},
-                   {'name':'ac and dc circuits'},
-                   {'name':'acids and bases'},
-                   {'name':'analytical writing'},
-                   {'name':'biochemistry'},
-                   {'name':'calculus'},
-                   {'name':'channel'},
-                   {'name':'electrostatics and magnets'},
-                   {'name':'geometry'},
-                   {'name':'integrated reasoning'},
-                   {'name':'mcat diagnostic review small group'},
-                   {'name':'mcat fl 1 review small group'},
-                   {'name':'molecular genetics'},
-                   {'name':'msct workshop 1'},
-                   {'name':'msct workshop 2'},
-                   {'name':'msct workshop 3'},
-                   {'name':'organic chemistry 1'},
-                   {'name':'organic chemistry 2'},
-                   {'name':'organic chemistry 3'},
-                   {'name':'perceptual ability 1'},
-                   {'name':'perceptual ability 2'},
-                   {'name':'physics 1'},
-                   {'name':'physics 2'},
-                   {'name':'quant mastery a'},
-                   {'name':'quant mastery b'},
-                   {'name':'statistics'},
-                   {'name':'test analysis and patterns workshop 1'},
-                   {'name':'test analysis and patterns workshop 2'},
-                   {'name':'test analysis and patterns workshop 3'},
-                   {'name':'the kidney'},
-                   {'name':'thermodynamics'},
-                   {'name':'verbal'},
-                   {'name':'verbal mastery'}
-    ]    
+    # Connect to MongoDB
+    client = MongoClient()
+    db = client.dsbc
+
+    # Set Collection
+    survey_comments = db.survey_comments
+
+    session_list = []
+
+    responses = sorted(survey_comments.distinct('type')) 
+
+    for response in responses:
+	session_list.append({'name': response})
+
+    presenter_list = []
+
+#    responses = sorted(survey_comments.distinct('presenter'))
+
+#    for response in responses:
+#        presenter_list.append({'name': response})
+
     return render_template('index.html',
 			   title='Clustering WebApp',
-			   option_list = option_list)
+			   session_list = session_list,
+			   presenter_list = presenter_list)
 
 @app.route('/cluster', methods=['GET', 'POST'])
 def cluster():
@@ -98,11 +73,18 @@ def cluster():
     epsilon = float(flask.request.form['epsilon']) 
     samples = int(flask.request.form['samples'])
     date = flask.request.form['date'] 
-    if date == None or date == "":	
-        responses = survey_comments.find({'type':type})     # Constrain data here
-    else:
-        responses = survey_comments.find({'type':type,
-	    				      'date':{'$gte': date}})     # Constrain data here 
+    presenter = flask.request.form['presenter']
+
+    params = {'type':type}
+
+    if presenter != 'all':
+	params['presenter'] = presenter
+
+    if date != None and date != "":	
+        params['date'] = {'$gte': date}
+    
+    responses = survey_comments.find(params)
+
     for response in responses:
         response_text = response['response']
         blob = TextBlob(response_text)
@@ -133,7 +115,7 @@ def cluster():
         data_set = polar_data
    
     # Build Vector of TfIdf Values
-    vectorizer = TfidfVectorizer(ngram_range=(1,2), max_features=1000, stop_words='english')
+    vectorizer = TfidfVectorizer(ngram_range=(1,3), max_features=1000, stop_words='english')
     X_one = vectorizer.fit_transform(data_set).toarray()
     try:
 	pca = PCA(n_components=1000)
@@ -160,7 +142,7 @@ def cluster():
 
         for i in range(0, len(cluster_contents_dbscan)):
             temp_data = np.array(data_set)[clusters_dbscan==i]
-            temp_vectorizer = TfidfVectorizer(ngram_range=(1,2), max_features=1000, stop_words='english')
+            temp_vectorizer = TfidfVectorizer(ngram_range=(1,3), max_features=1000, stop_words='english')
             temp_X = temp_vectorizer.fit_transform(temp_data)
             distance = metrics.pairwise.pairwise_distances(temp_X, Y=get_centroid(temp_X.toarray()).tolist())
             min_distance = np.min(distance)
@@ -184,4 +166,6 @@ def cluster():
 			   comment_count = len(data_set),
 			   epsilon = epsilon,
 			   samples = samples,
-			   time = total_time)
+			   time = total_time,
+			   data_set = data,
+			   presenter = presenter)
