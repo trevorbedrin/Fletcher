@@ -31,24 +31,23 @@ def index():
     # Set Collection
     survey_comments = db.survey_comments
 
-    session_list = []
-
-    responses = sorted(survey_comments.distinct('type')) 
-
-    for response in responses:
-	session_list.append({'name': response})
-
+    type_list = []
     presenter_list = []
 
-    responses = sorted(survey_comments.distinct('presenter'))
+    results = sorted(survey_comments.distinct('type')) 
 
-    for response in responses:
-        presenter_list.append({'name': response})
+    for result in results:
+	type_list.append({'name': result})
+
+    results = sorted(survey_comments.distinct(''))
+
+    for result in results:
+        type_list.append({'name': result})
+
 
     return render_template('index.html',
 			   title='Clustering WebApp',
-			   session_list = session_list,
-			   presenter_list = presenter_list)
+			   option_list = option_list)
 
 @app.route('/cluster', methods=['GET', 'POST'])
 def cluster():
@@ -68,24 +67,16 @@ def cluster():
     all_data = []      # All Comments
   
     # Get data
-    filter = flask.request.form['filter']
-    if filter == 'type':
-        filter_value = flask.request.form['type']
-        params = {'type': filter_value}
-    elif filter == 'presenter':
-	filter_value = flask.request.form['presenter']
-        params = {'presenter': filter_value}
-
+    type = flask.request.form['type']
     data = flask.request.form['data-set']	
     epsilon = float(flask.request.form['epsilon']) 
     samples = int(flask.request.form['samples'])
     date = flask.request.form['date'] 
-
-    if date != None and date != "":	
-        params['date'] = {'$gte': date}
-    
-    responses = survey_comments.find(params)
-
+    if date == None or date == "":	
+        responses = survey_comments.find({'type':type})     # Constrain data here
+    else:
+        responses = survey_comments.find({'type':type,
+	    				      'date':{'$gte': date}})     # Constrain data here 
     for response in responses:
         response_text = response['response']
         blob = TextBlob(response_text)
@@ -162,11 +153,10 @@ def cluster():
     return render_template('cluster.html',
                            title='Clusters',
                            clusters = dict_list,
+		           type = type,
                            date = date,
 			   comment_count = len(data_set),
-			   total_comments = len(polar_data),
 			   epsilon = epsilon,
 			   samples = samples,
 			   time = total_time,
-			   data_set = data,
-			   filter_value = filter_value)
+			   data_set = data)

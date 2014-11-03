@@ -3,33 +3,28 @@
     <form action="/cluster" method="POST">
       <table>
         <tr>
-          <td>
-            <strong>
-              Session Type:
-            </strong>
-          </td>
-          <td>
-            <select name="type" width="300px">
-            {% for o in session_list %}
-              <option value="{{ o.name }}">{{ o.name }}</option>
-            {% endfor %}
+          <td> 
+            <select id="filter" name="filter">
+              <option value="type">Session Type</option>
+              <option value="presenter">Presenter</option>
             </select>
           </td>
-        </tr>
-        <tr>
           <td>
-            <strong>
-              Presenter:
-            </strong>
-          </td>
-          <td>
-            <select name="presenter" width="300px">
-              <option value='all' />
-	    {% for o in presenter_list %}
-              <option value="{{ o.name }}">{{ o.name }}</option>
-            {% endfor %}
-            </select>
-          </td>
+            <div id="typeSelector">
+	      <select name="type" width="300px">
+              {% for o in session_list %}
+                <option value="{{ o.name }}">{{ o.name }}</option>
+              {% endfor %}
+              </select>
+	    </div>
+            <div id="presenterSelector" style="display:none;">
+              <select name="presenter" width="300px">
+              {% for o in presenter_list %}
+                <option value="{{ o.name }}">{{ o.name }}</option>
+              {% endfor %}
+              </select>
+            </div>
+	  </td>
         </tr>
         <tr>
           <td>
@@ -58,14 +53,22 @@
         <tr>
           <td>
             <strong>
-              Epsilon:
+              Cluster Size:
             </strong>
           </td>
           <td>
             <table>
 	      <tr>
 		<td>
-	    	  <input type="number" size="6" name="epsilon" min="0.5" max="1.5" step="0.05" value="0.85">
+	    	  <table style="margin: 0 auto;">
+  		    <tr>
+		      <td width="75px" style="font-size:.75em;">Smaller/More Clusters</td>
+		      <td>&nbsp;</td>
+		      <td width="125px"><input type="range" size="6" name="epsilon" min="0.5" max="1.5" step="0.05" value="0.85"></td>
+                      <td>&nbsp;</td>
+	   	      <td width="75px" style="font-size:.75em;">Larger/Fewer Clusters</td>
+                    </tr>
+                  </table>
                 </td>
               </tr>
 	    </table>
@@ -74,14 +77,22 @@
         <tr>
           <td>
             <strong>
-              Samples:
+              Cluster Generality:
             </strong>
           </td>
           <td>
             <table>
               <tr>
 		<td>
-                  <input type="number" size="6" name="samples" min="1" max="10" step="1" value="5">
+                  <table style="margin: 0 auto;">
+                    <tr>
+                      <td width="75px" style="font-size:.75em;">More General</td>
+                      <td>&nbsp;</td>
+                      <td width="125px"><input type="range" size="6" name="samples" min="1" max="10" step="1" value="5"></td>
+                      <td>&nbsp;</td>
+                      <td width="75px" style="font-size:.75em;">More Specific</td>
+                    </tr>
+                  </table>
                 </td>
               </tr>
             </table>

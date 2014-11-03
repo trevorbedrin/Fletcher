@@ -1,17 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>{{ type }}</h1> 
-    {% if presenter %}
-    Presenter: {{ presenter }}<br />
-    {% endif %}
-    Comments analyzed: {{ comment_count }}<br />
-    Data set: {{ data_set }} comments<br />
-    Time to analyze: {{ time }}<br />	
-    Epsilon: {{ epsilon }}<br />
-    Samples: {{ samples }}<br />
+    <h1>{{ filter_value }}</h1> 
+    <style>
+        .chart div {
+            display: inline;
+            float: left;
+            font: 14px sans-serif;
+  	    text-align: center;
+  	    margin-left: 1px;
+  	    paddin: 2px;
+	    color: white;
+	}
+    </style>
+    <div class="chart">
+      <div style="background-color: steelblue; width: {{ (comment_count / total_comments) * 600 }}px;">{{ comment_count }}</div>
+      <div style="background-color: gray; width: {{ ((total_comments - comment_count) / total_comments) * 600 }}px;">{{total_comments - comment_count }}</div>
+    </div>
+    <br />
+    {% set polar = 'polar' %}
+    Comments analyzed: {{ comment_count }} {% if data_set != polar %}{{ data_set }}{% endif %} / {{ total_comments }} total <br />
     {% if date %}
-    Comments made after: {{ date }}
+    Comments made after: {{ date }}<br />
     {% endif %}
+    Time to analyze: {{ time }}<br />	
+    <!--Epsilon: {{ epsilon }}<br />
+    Samples: {{ samples }}<br /-->
     <h3>Themes:</h3>
     <div class="panel-group" id="accordion">
     {% for cluster in clusters %}

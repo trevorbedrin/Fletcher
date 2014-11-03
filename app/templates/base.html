@@ -5,9 +5,57 @@
     {% else %}
     <title>Welcome</title>
     {% endif %}
+
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <style>
+	table 
+    	{ 
+	    border-collapse: separate; 
+	    border-spacing: 5px; 
+	}
+
+        div#content
+        {
+	    position: relative;
+	    width: 95%;
+	    margin-left: 2%;
+	    margin-top: 75px;
+	    margin-bottom: 0px;
+	    padding: 0px;
+	    display: block;
+        }
+	
+        div#title
+        {
+	    position: relative;
+	    color: #ffffff;	
+	    font-size: 24px;
+	    vertical-align: middle;
+	    text-align: center;
+	    display: block-inline;
+	    margin-top: -52px;
+	    margin-left: 200px;
+            margin-right: 20px;
+	}
+
+        #header 
+        {
+	    position: fixed;
+	    width: 100%;
+	    top: 0px;	
+	    height: 70px;
+	    z-index: 1000;
+	    background-image: url('http://www.liveonlinetechnology.com/images/kapbarbg.gif');
+	    margin: 0px;
+	    border: 0px;
+	    padding: 0px;
+	    display: block;
+	    text-overflow: hidden;
+        }
+    </style>
+
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>    
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -18,29 +66,37 @@
                                   maxDate: new Date(2014, 9, 14) });
       });
     </script>
-    <script type="text/javascript">
-      function updateEpsilon(val) {
-        document.getElementById('epsilon_value').value=val; 
-      }
-    </script>
-    <script type="text/javascript">
-      function updateSamples(val) {
-        document.getElementById('sample_value').value=val; 
-      }
+    <script>
+    $(document).ready(function(){
+        $("#filter").change(function(){
+            $( "select option:selected").each(function(){
+                if($(this).attr("value")=="type"){
+                    $("#presenterSelector").hide();
+                    $("#typeSelector").show();
+                }
+                if($(this).attr("value")=="presenter"){
+                    $("#typeSelector").hide();
+                    $("#presenterSelector").show();
+                }
+            });
+        }).change();
+    });
     </script>
   </head>
   <body>
-    <div><a href="/index">Home</a></div>
+    <div id="header">
+      <a href="/">
+	<img height="70px" src="http://liveonlinetechnology.com/images/kaplanlogo.gif" />
+      </a>
+      <div id="title">
+        Clustering Analysis Tool
+      </div>
+    </div>
+    <br />    
+    <div id="content">
+      {% block content %}{% endblock %}	
+    </div>
     <hr>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li>{{ message }} </li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}	
+    <a href="/index">Home</a>
   </body>
 </html>
